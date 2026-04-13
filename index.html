@@ -1,1 +1,101 @@
-# virtuel
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prédiction Football Virtuel Avancée</title>
+<style>
+body { font-family: Arial; text-align:center; background:#f0f4f8; padding:20px; }
+h1 { color:#1e3d59; }
+select, input { font-size:16px; margin:5px; width:50px; text-align:center; }
+button { padding:10px 20px; font-size:16px; cursor:pointer; background:#1e3d59; color:white; border:none; border-radius:5px; margin-top:10px; }
+button:hover { background:#16324a; }
+.resultat { margin-top:20px; font-size:18px; }
+span.perdu { color:red; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<h1>Prédiction Premier League Virtuelle</h1>
+
+<p>Choisis les équipes :</p>
+<select id="equipeA">
+<option value="Manchester United">Manchester United</option>
+<option value="Chelsea">Chelsea</option>
+<option value="Liverpool">Liverpool</option>
+<option value="Arsenal">Arsenal</option>
+<option value="Manchester City">Manchester City</option>
+<option value="Tottenham">Tottenham</option>
+</select>
+
+vs
+
+<select id="equipeB">
+<option value="Manchester United">Manchester United</option>
+<option value="Chelsea">Chelsea</option>
+<option value="Liverpool">Liverpool</option>
+<option value="Arsenal">Arsenal</option>
+<option value="Manchester City">Manchester City</option>
+<option value="Tottenham">Tottenham</option>
+</select>
+
+<br><br>
+<button onclick="entrerDerniersMatchs()">Entrer les derniers matchs et classement</button>
+
+<div id="dernierMatchs" style="margin-top:20px;"></div>
+<div id="prediction" class="resultat"></div>
+
+<script>
+function entrerDerniersMatchs(){
+    const equipeA = document.getElementById('equipeA').value;
+    const equipeB = document.getElementById('equipeB').value;
+
+    let html = `<h3>Entrez les 3 derniers matchs pour ${equipeA} (G/N/X)</h3>`;
+    for(let i=1;i<=3;i++) html += `<input id="A${i}" maxlength="1"> `;
+    html += `<br>Classement actuel de ${equipeA} (1 = premier, 20 = dernier) : <input type="number" id="classeA" min="1" max="20" value="10">`;
+
+    html += `<h3>Entrez les 3 derniers matchs pour ${equipeB} (G/N/X)</h3>`;
+    for(let i=1;i<=3;i++) html += `<input id="B${i}" maxlength="1"> `;
+    html += `<br>Classement actuel de ${equipeB} (1 = premier, 20 = dernier) : <input type="number" id="classeB" min="1" max="20" value="10">`;
+
+    html += `<br><button onclick="fairePrediction()">Valider et Prédire</button>`;
+    document.getElementById('dernierMatchs').innerHTML = html;
+}
+
+function fairePrediction(){
+    const equipeA = document.getElementById('equipeA').value;
+    const equipeB = document.getElementById('equipeB').value;
+
+    // Récupérer les 3 derniers matchs
+    let derniersA = [], derniersB = [];
+    for(let i=1;i<=3;i++){
+        derniersA.push(document.getElementById('A'+i).value.toUpperCase());
+        derniersB.push(document.getElementById('B'+i).value.toUpperCase());
+    }
+
+    // Classement
+    const classeA = parseInt(document.getElementById('classeA').value);
+    const classeB = parseInt(document.getElementById('classeB').value);
+
+    // Calcul simple : plus de G et meilleur classement => plus de chance
+    let scoreA = derniersA.filter(r => r==='G').length + (21-classeA)/10;
+    let scoreB = derniersB.filter(r => r==='G').length + (21-classeB)/10;
+
+    // Générer score final simulé
+    let predA = Math.min(Math.floor(Math.random() * (Math.ceil(scoreA)+1)),5);
+    let predB = Math.min(Math.floor(Math.random() * (Math.ceil(scoreB)+1)),5);
+
+    // Affichage des derniers matchs avec X en rouge
+    const formatDerniers = arr => arr.map(r=> r==='X'? `<span class="perdu">X</span>`:r).join(' ');
+
+    document.getElementById('prediction').innerHTML = `
+    <h3>Derniers matchs :</h3>
+    ${equipeA}: ${formatDerniers(derniersA)}<br>
+    ${equipeB}: ${formatDerniers(derniersB)}<br><br>
+    <strong>Prédiction du match :</strong> ${equipeA} ${predA} - ${predB} ${equipeB}
+    `;
+}
+</script>
+
+</body>
+</html>
